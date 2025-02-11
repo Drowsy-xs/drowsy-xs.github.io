@@ -28,12 +28,17 @@ $base-font-size: 16px;
 $small-font-size: 14px;
 
 // Colors
-$base-color: $oc-gray-8;
-$base-lighten-color: $oc-gray-6;
-$base-lightener-color: $oc-gray-4;
+// $base-color: $oc-gray-8;
+// $base-lighten-color: $oc-gray-6;
+// $base-lightener-color: $oc-gray-4;
+$base-color: $white;
+$base-lighten-color: $lightGray;
+$base-lightener-color: $gray;
 
-$background-color: $oc-gray-0;
-$background-lighten-color: #f8f9fa6b;
+$background-color: $black;
+$background-lighten-color: #111;
+// $background-color: $oc-gray-0;
+// $background-lighten-color: #f8f9fa6b;
 
 $text-color: $base-color;
 $link-color: $oc-blue-8;
