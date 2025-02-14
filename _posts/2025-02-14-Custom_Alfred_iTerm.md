@@ -7,10 +7,12 @@ comments: true
 author: xingsong
 toc: true
 ---
-# 概述
 
-- 工作中在使用iTerm远程设备，需要打开app，再ssh连接机器，过于麻烦，有没有更方便的方式
-- 有的，有的兄弟，那就是Alfred自带的Terminal功能，唯一难点是需要写Applescript
+工作中在使用iTerm远程设备，需要打开app，再ssh连接机器，过于麻烦，有没有更方便的方式
+
+有的！有的兄弟！那就是Alfred自带的Terminal功能，唯一难点是需要写Applescript
+
+<!-- more -->
 
 # 实现
 
