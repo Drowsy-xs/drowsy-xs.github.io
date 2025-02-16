@@ -38,8 +38,7 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 
 # Applescript解读
 
-<details>
-<summary>脚本内容</summary>
+<details><summary>脚本内容</summary>
 ```
 -- Set this property to true to always open in a new window
 property open_in_new_window : false
@@ -133,5 +132,4 @@ on alfred_script(query)
   end repeat
 end alfred_script
 ```
-
 </details>
