@@ -40,7 +40,7 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 
 <details>
 <summary>脚本内容</summary>
-```Applescript
+```
 -- Set this property to true to always open in a new window
 property open_in_new_window : false
 
