@@ -37,11 +37,10 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 > 2. 针对你想要输入的内容进行修改，如果想要输入多次可以用&隔开（具体内容可以看解读）
 
 # Applescript解读
-
-<div class="code-box">
-<div class="code-box-title">脚本内容</div>
-<div class="code-box-content">
-  <pre><code>
+<details class="code-box">
+  <summary class="code-box-title">折叠的代码框</summary>
+  <div class="code-box-content">
+    <pre><code class="language-applescript">
 -- Set this property to true to always open in a new window
 property open_in_new_window : false
 
@@ -134,7 +133,6 @@ on alfred_script(query)
   end repeat
 end alfred_script
   </code></pre>
-</details>
 
 <style>
 .code-box {
