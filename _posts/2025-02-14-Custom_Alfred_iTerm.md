@@ -43,7 +43,7 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
     <span class="summary-arrow"></span>
   </summary>
   <div class="code-box-content">
-    <pre><code class="language-applescript">
+    <pre><code>
 -- Set this property to true to always open in a new window
 property open_in_new_window : false
 
