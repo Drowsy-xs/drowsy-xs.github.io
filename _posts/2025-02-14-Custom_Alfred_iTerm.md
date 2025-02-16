@@ -133,6 +133,8 @@ on alfred_script(query)
   end repeat
 end alfred_script
   </code></pre>
+</div>
+</details>
 
 <style>
 .code-box {
