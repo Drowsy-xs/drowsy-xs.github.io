@@ -39,8 +39,8 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 # Applescript解读
 
 <details>
-<summary>Applescript解读 脚本内容</summary>
-```Applescript解读
+<summary>脚本内容</summary>
+```Applescript
 -- Set this property to true to always open in a new window
 property open_in_new_window : false
 
