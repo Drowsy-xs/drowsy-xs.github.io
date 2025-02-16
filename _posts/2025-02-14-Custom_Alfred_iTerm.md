@@ -38,7 +38,10 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 
 # Applescript解读
 <details class="code-box">
-  <summary class="code-box-title">折叠的代码框</summary>
+  <summary class="code-box-title">
+    <span class="summary-text">点击打开折叠</span>
+    <span class="summary-arrow"></span>
+  </summary>
   <div class="code-box-content">
     <pre><code class="language-applescript">
 -- Set this property to true to always open in a new window
@@ -151,6 +154,27 @@ end alfred_script
   cursor: pointer; /* 鼠标样式 */
   font-weight: bold; /* 字体加粗 */
   border-bottom: 1px solid #ccc; /* 标题底部边框 */
+  display: flex; /* 使用 flexbox 布局 */
+  justify-content: space-between; /* 将内容分散对齐 */
+  align-items: center; /* 垂直居中对齐 */
+}
+
+.summary-text {
+  flex-grow: 1; /* 允许文本扩展以占据剩余空间 */
+  text-align: right; /* 文本右对齐 */
+}
+
+.summary-arrow {
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 8px solid black; /* 三角形图标 */
+  margin-left: 5px; /* 添加一些间距 */
+}
+
+.code-box[open] .summary-arrow {
+  transform: rotate(90deg); /* 展开时旋转三角形 */
 }
 
 .code-box-content {
