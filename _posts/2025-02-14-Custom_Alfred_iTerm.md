@@ -178,7 +178,9 @@ end alfred_script
 }
 
 .code-box-content {
-  padding: 0; /* 代码内容内边距 */
+  padding: 10px; /* 代码内容内边距 */
+  padding-top: 0;
+  padding-bottom: 0;
   overflow-x: auto; /* 水平滚动条 */
   white-space: pre;
 }
