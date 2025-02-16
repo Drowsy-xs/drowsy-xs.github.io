@@ -38,8 +38,9 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 
 # Applescript解读
 
-<details>
-<summary>脚本内容</summary>
+<div class="code-box">
+<div class="code-box-title">脚本内容</div>
+<div class="code-box-content">
   <pre><code>
 -- Set this property to true to always open in a new window
 property open_in_new_window : false
@@ -134,3 +135,31 @@ on alfred_script(query)
 end alfred_script
   </code></pre>
 </details>
+
+<style>
+.code-box {
+  border: 1px solid #ccc; /* 边框 */
+  border-radius: 5px; /* 圆角 */
+  margin: 10px; /* 外边距 */
+  font-family: monospace; /* 等宽字体 */
+  background-color: #f9f9f9; /* 背景颜色 */
+}
+
+.code-box-title {
+  background-color: #f0f0f0; /* 标题背景色 */
+  padding: 8px; /* 内边距 */
+  cursor: pointer; /* 鼠标样式 */
+  font-weight: bold; /* 字体加粗 */
+  border-bottom: 1px solid #ccc; /* 标题底部边框 */
+}
+
+.code-box-content {
+  padding: 10px; /* 代码内容内边距 */
+  overflow-x: auto; /* 水平滚动条 */
+}
+
+/* 如果使用<details>标签，添加以下样式 */
+.code-box[open] .code-box-title {
+    border-bottom: none;
+}
+</style>
