@@ -135,8 +135,8 @@ on alfred_script(query)
     delay 0.01
   end repeat
 end alfred_script
-  </code></pre>
-</div>
+    </code></pre>
+  </div>
 </details>
 
 <style>
@@ -179,8 +179,8 @@ end alfred_script
 
 .code-box-content {
   padding: 10px; /* 代码内容内边距 */
-  padding-top: 0;
-  padding-bottom: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
   overflow-x: auto; /* 水平滚动条 */
   white-space: pre;
 }
