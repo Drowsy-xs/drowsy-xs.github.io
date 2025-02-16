@@ -133,3 +133,5 @@ on alfred_script(query)
   end repeat
 end alfred_script
 ```
+
+</details>
