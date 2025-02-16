@@ -154,6 +154,7 @@ end alfred_script
 .code-box-content {
   padding: 10px; /* 代码内容内边距 */
   overflow-x: auto; /* 水平滚动条 */
+  white-space: pre;
 }
 
 /* 如果使用<details>标签，添加以下样式 */
