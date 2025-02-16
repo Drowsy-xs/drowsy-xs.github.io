@@ -27,14 +27,14 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 ## 使用
 
 ### 常规
-1. 复制脚本到粘贴板；
-2. 打开Alfred Preferences （按win + ,）；
-3. 点开Features -> Terminal -> Custom；
-4. 把脚本复制到自定义框里
+> 1. 复制脚本到粘贴板；
+> 2. 打开Alfred Preferences （按win + ,）；
+> 3. 点开Features -> Terminal -> Custom；
+> 4. 把脚本复制到自定义框里
 
 ### 个人
-1. 对于我来说我是使用ssh登录的，就需要对脚本内传参的query做点修改；
-2. 针对你想要输入的内容进行修改，如果想要输入多次可以用&隔开（具体内容可以看解读）
+> 1. 对于我来说我是使用ssh登录的，就需要对脚本内传参的query做点修改；
+> 2. 针对你想要输入的内容进行修改，如果想要输入多次可以用&隔开（具体内容可以看解读）
 
 # Applescript解读
 
