@@ -2,15 +2,15 @@
 layout: post
 title: "Alfred调用iTerm"
 date:   2025-02-14
-tags: [geek]
+tags: [tools]
 comments: true
 author: xingsong
 toc: true
 ---
 
-工作中在使用iTerm远程设备，需要打开app，再ssh连接机器，过于麻烦，有没有更方便的方式
+问：通常我们用iTerm远程设备，步骤繁琐，首先打开app，再ssh连接机器，过于麻烦，有没有更方便的方式？
 
-有的！有的兄弟！那就是Alfred自带的Terminal功能，唯一难点是需要写Applescript
+答：有的！有的兄弟！那就是Alfred自带的Terminal功能，唯一难点是需要按照你想要的方式撰写Applescript～
 
 <!-- more -->
 
@@ -37,6 +37,7 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 2. 针对你想要输入的内容进行修改，如果想要输入多次可以用&隔开（具体内容可以看解读）
 
 # Applescript解读
+
 ```
 -- Set this property to true to always open in a new window
 property open_in_new_window : false
