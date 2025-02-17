@@ -16,7 +16,7 @@ toc: true
 
 # 实现
 
-参考Github上官方脚本: https://github.com/vitorgalvao/custom-alfred-iterm-scripts
+本文基于参考Github上官方脚本 [**点击进入Github**]( https://github.com/vitorgalvao/custom-alfred-iterm-scripts )
 
 ## Applescript 获取
 
@@ -90,12 +90,13 @@ on has_windows()
   true  <span style="color: green;">-- 隐式返回true</span>
 end has_windows
 
-on send_text(custom_text)
-  set custom_text to custom_text & "\n"
+<span style="color: green;">-- 向当前 iTerm 会话发送文本</span>
+on send_text(custom_text) 
+  <span style="color: green;">-- 如下按照我的习惯，是先固定命令 ssh 到堡垒机，再通过传入的文本(即设备hostname)连接；按照个人习惯修改 write text 后的参数即可</span>
   tell application "iTerm" to tell the first window to tell current session to write text  "ssh you_name@you_ip\n" & custom_text & return
 end send_text
 
--- Main
+<span style="color: green;">-- 向当前 iTerm 会话发送文本</span>-- 主程序</span>
 on alfred_script(query)
   if has_windows() then
     if open_in_new_window then
