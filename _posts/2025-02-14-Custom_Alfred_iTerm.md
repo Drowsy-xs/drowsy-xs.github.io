@@ -36,44 +36,45 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 > 1. 对于我来说我是使用ssh登录的，就需要对脚本内传参的query做点修改；
 > 2. 针对你想要输入的内容进行修改，如果想要输入多次可以用&隔开（具体内容可以看解读）
 
-# Applescript解读
-<details class="code-box">
-  <summary class="code-box-title">
-    <span class="summary-text">点击打开折叠</span>
-    <span class="summary-arrow"></span>
-  </summary>
-  <div class="code-box-content">
-    <pre><code>
--- Set this property to true to always open in a new window
+# Script解读
+<details class="code-box"><summary class="code-box-title"><span class="summary-text">点击打开折叠</span><span class="summary-arrow"></span></summary><div class="code-box-content">
+<pre><code>
+-- 定义一个变量 控制是否始终在新窗口中打开 iTerm2
 property open_in_new_window : false
 
--- Set this property to false to reuse current tab
+-- 定义一个变量 控制是否在新标签页中打开 iTerm2
 property open_in_new_tab : true
 
--- Set this property to true if iTerm is configured to launch without opening a new window
+-- 定义一个变量 控制 iTerm2 是否在启动时不打开新窗口（例如，如果后台启动中）
 property iterm_opens_quietly : false
 
--- Handlers
+-- 处理阶段函数
 on new_window()
+  -- 创建一个新 iTerm2 窗口，使用默认的配置
   tell application "iTerm" to create window with default profile
 end new_window 
 
 on new_tab()
+  -- 在当前 iTerm2 窗口中创建一个新的标签页，使用默认配置
   tell application "iTerm" to tell the first window to create tab with default profile
 end new_tab
 
 on call_forward()
+  -- 激活 iTerm ，页面跳转到应用
   tell application "iTerm" to activate
 end call_forward
 
 on is_running()
+  -- 检查iTerm 是否运行
   application "iTerm" is running
 end is_running
 
 on is_processing()
+  -- 检查当前 iTerm2 会话是否正在处理命令
   tell application "iTerm" to tell the first window to tell current session to return is processing
 end is_processing
 
+-- 检查 iTerm2 是否有有效的窗口、标签页和会话。并检查会话中是否存在文本
 on has_windows()
   if not is_running() then return false
 
