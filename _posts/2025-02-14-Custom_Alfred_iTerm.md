@@ -16,7 +16,7 @@ toc: true
 
 # 实现
 
-本文基于参考Github上官方脚本 [**点击进入Github**]( https://github.com/vitorgalvao/custom-alfred-iterm-scripts )
+本文基于Github上官方脚本 <[**点击进入Github**]( https://github.com/vitorgalvao/custom-alfred-iterm-scripts )>
 
 ## Applescript 获取
 
@@ -39,28 +39,28 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 # Script解读
 <details class="code-box"><summary class="code-box-title"><span class="summary-text">点击打开折叠</span><span class="summary-arrow"></span></summary><div class="code-box-content">
 <pre><code>
-<span style="color: green;">-- 定义一个变量 控制是否始终在新窗口中打开 iTerm2</span>
+<span style="color: green;">-- 定义一个变量 是否始终在新窗口中打开 iTerm（主进程中调用，如果为 true 意味着，无论当前 iTerm 中已经有多少窗口或标签页，脚本都会强制在新窗口中打开新的会话）</span>
 property open_in_new_window : false
 
-<span style="color: green;">-- 定义一个变量 控制是否在新标签页中打开 iTerm2</span>
+<span style="color: green;">-- 定义一个变量 是否在新标签页中打开 iTerm（主进程中调用，这意味着，新的会话将在当前窗口的新标签页中打开）</span>
 property open_in_new_tab : true
 
-<span style="color: green;">-- 定义一个变量 控制 iTerm2 是否在启动时不打开新窗口（例如，如果后台启动中）</span>
+<span style="color: green;">-- 定义一个变量 iTerm 是否有开启“quietly”启动选项（即启动时不打开新窗口，后台启动）</span>
 property iterm_opens_quietly : false
 
 <span style="color: green;">-- 处理阶段各函数</span>
 on new_window()
-  <span style="color: green;">-- 创建一个新 iTerm2 窗口，使用默认的配置</span>
+  <span style="color: green;">-- 创建一个新 iTerm 窗口，使用默认的配置</span>
   tell application "iTerm" to create window with default profile
 end new_window 
 
 on new_tab()
-  <span style="color: green;">-- 在当前 iTerm2 窗口中创建一个新的标签页，使用默认配置</span>
+  <span style="color: green;">-- 在当前 iTerm 窗口中创建一个新的标签页，使用默认配置</span>
   tell application "iTerm" to tell the first window to create tab with default profile
 end new_tab
 
 on call_forward()
-  <span style="color: green;">-- 激活 iTerm ，页面跳转到应用</span>
+  <span style="color: green;">-- 激活 iTerm ，如果 iTerm 存在则页面跳转到应用，如果不存在则打开应用</span>
   tell application "iTerm" to activate
 end call_forward
 
@@ -76,7 +76,7 @@ end is_processing
 
 <span style="color: green;">-- 检查 iTerm2 是否有有效的窗口、标签页和会话。并检查会话中是否存在文本</span>
 on has_windows()
-  if not is_running() then return false
+  if not is_running() then return false  <span style="color: green;">-- 判断 iTerm 窗口没有运行，函数返回false</span>
 
   tell application "iTerm"  <span style="color: green;">-- tell 块用于将后续命令发送给 iTerm</span>
     if windows is {} then return false  <span style="color: green;">-- 判断 windows 列表是否为空，为空表示没有打开的窗口，函数返回 false</span>
@@ -96,28 +96,30 @@ on send_text(custom_text)
   tell application "iTerm" to tell the first window to tell current session to write text  "ssh you_name@you_ip\n" & custom_text & return
 end send_text
 
-<span style="color: green;">-- 向当前 iTerm 会话发送文本</span>-- 主程序</span>
+<span style="color: green;">-- 主程序</span>
 on alfred_script(query)
   if has_windows() then
+    <span style="color: green;">-- has_windows函数通过，表示存在窗口；按照开头拟定的规则参数，决定如何处理新的会话</span>
     if open_in_new_window then
       new_window()
     else if open_in_new_tab then
       new_tab()
     else
-      -- Reuse current tab
+      <span style="color: green;">-- 复用当前的标签页，可不写</span>
     end if
   else
-    -- If iTerm is not running and we tell it to create a new window, we get two:
+    <span style="color: green;">-- 该判断防止如果 iTerm 没有窗口，但是设置了后台运行(例如配置了"quietly"启动)，继续执行创建新窗口，会出现两个窗口的情况</span>
     -- one from opening the application, and the other from the command
+    <span style="color: green;">-- 当 iTerm 有运行，或开启了“quietly”后台启动，这意味着 iTerm 已经启动，但可能没有窗口，调用new_window函数打开一个新窗口</span>
     if is_running() or iterm_opens_quietly then
       new_window()
     else
-      call_forward()
+      call_forward()  <span style="color: green;">-- iTerm 没有后台运行，用 activate 开启/跳转到应用</span>
     end if
   end if
 
-  -- macOS buffers TTY input to 1024 bytes, so if input is larger wait for session to be ready
-  -- "with timeout" does not work with "repeat", so use a delay (0.01 * 500 means a timeout of 5 seconds)
+  <span style="color: green;">-- 输入缓冲处理</span>
+  <span style="color: green;">-- macOS 缓冲TTY大小为1024字节，如果 query 超过该大小，会循环检查知道会话不再处理命令，这样做是为了避免输入被截断</span>
   if length of query > 1024
     repeat 500 times
       if not is_processing() then exit repeat
