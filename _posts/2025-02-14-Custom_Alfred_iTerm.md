@@ -121,16 +121,15 @@ on alfred_script(query)
   <span style="color: green;">-- 输入缓冲处理</span>
   <span style="color: green;">-- macOS 缓冲TTY大小为1024字节，如果 query 超过该大小，会循环检查知道会话不再处理命令，这样做是为了避免输入被截断</span>
   if length of query > 1024
-    repeat 500 times
-      if not is_processing() then exit repeat
-      delay 0.01
+    repeat 500 times <span style="color: green;">-- repeat 循环500次，循环的目的是等待 iTerm 会话完成之前的处理</span>
+      if not is_processing() then exit repeat  <span style="color: green;">-- 当 is_processing 函数处理完，返回false，exit repeat 会立刻退出 repeat 循环</span>
+      delay 0.01  <span style="color: green;">-- 此处用 delay 而不用 with timeout 是因为 with timeout 和 repeat 不兼容</span>
     end repeat
   end if
 
-  -- Make sure a window exists before we continue, or the write may fail
-  -- "with timeout" does not work with "repeat", so use a delay (0.01 * 500 means a timeout of 5 seconds)
+  <span style="color: green;">-- 循环等待 iTerm 窗口的出现，并确保向 iTerm 发送文本 query</span>
   repeat 500 times
-    if has_windows() then
+    if has_windows() then <span style="color: green;">-- 当空窗口出现的时候，传入文本，跳转应用</span>
       send_text(query)
       call_forward()
       exit repeat
