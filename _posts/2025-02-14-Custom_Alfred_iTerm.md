@@ -27,9 +27,10 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 ## 使用
 
 ### 常规
-> 1. 复制脚本到粘贴板；
-> 2. 打开Alfred Preferences （按win + ,）；
+> 1. 执行上述curl命令，会直接复制脚本到粘贴板；
+> 2. 打开Alfred Preferences （按 ⌘,）；
 > 3. 点开Features -> Terminal -> Custom；
+> ![alfred_terminal](/images/2025-02-14-Custom_Alfred_iTerm/alfred_terminal.png)
 > 4. 把脚本复制到自定义框里
 
 ### 个人
