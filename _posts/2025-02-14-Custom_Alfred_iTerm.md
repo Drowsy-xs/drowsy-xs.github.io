@@ -39,7 +39,7 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 
 # Script解读
 <details class="code-box"><summary class="code-box-title"><span class="summary-text">点击打开折叠</span><span class="summary-arrow"></span><button class="copy-button">复制</button></summary><div class="code-box-content">
-<pre><code>
+<pre><code id="myCode">
 <span style="color: green;">-- 定义一个变量 是否始终在新窗口中打开 iTerm（主进程中调用，如果为 true 意味着，无论当前 iTerm 中已经有多少窗口或标签页，脚本都会强制在新窗口中打开新的会话）</span>
 property open_in_new_window : false
 
@@ -204,3 +204,19 @@ end alfred_script
   right: 5px; /* 调整水平位置 */
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const copyButton = document.querySelector('.copy-button');
+  const codeBlock = document.getElementById('myCode');
+
+  copyButton.addEventListener('click', function() {
+    const code = codeBlock.textContent;
+    navigator.clipboard.writeText(code).then(function() {
+      alert('代码已复制到剪贴板！');
+    }, function(err) {
+      console.error('无法复制代码：', err);
+    });
+  });
+});
+</script>
