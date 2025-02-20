@@ -185,7 +185,7 @@ end alfred_script
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
   border-left: 8px solid black; /* 三角形图标 */
-  margin-left: 5px; /* 添加一些间距 */
+  margin-right: 5px; /* 添加一些间距 */
 }
 
 .code-box[open] .summary-arrow {
