@@ -38,8 +38,19 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 > 2. 针对你想要输入的内容进行修改，如果想要输入多次可以用&隔开（具体内容可以看解读）
 
 # Script解读
-<details class="code-box"><summary class="code-box-title"><span class="summary-text">点击打开折叠</span><span class="summary-arrow"></span><button class="copy-button">复制</button></summary><div class="code-box-content">
-<pre><code id="myCode">
+<details class="code-box">
+  <summary class="code-box-title">
+    <span class="summary-text">点击打开折叠</span>
+    <span class="summary-arrow"></span>
+    <button class="copy-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
+        <path fill="none" d="M0 0h24v24H0z"/>
+        <path d="M17 7h-5v-5C12 2.5 11.6 2 11 2H4c-.6 0-1 .5-1 1v16c0 .5.4 1 1 1h16c.5 0 1-.5 1-1V8c0-.6-.5-1-1-1zm-1 14H5V4h6v5h5v12zM8 6h3v3H8V6z"/>
+      </svg>
+    </button>
+  </summary>
+<div class="code-box-content">
+<pre><code>
 <span style="color: green;">-- 定义一个变量 是否始终在新窗口中打开 iTerm（主进程中调用，如果为 true 意味着，无论当前 iTerm 中已经有多少窗口或标签页，脚本都会强制在新窗口中打开新的会话）</span>
 property open_in_new_window : false
 
@@ -139,8 +150,8 @@ on alfred_script(query)
     delay 0.01
   end repeat
 end alfred_script
-    </code></pre>
-  </div>
+</code></pre>
+</div>
 </details>
 
 <style>
@@ -195,28 +206,41 @@ end alfred_script
 }
 
 .copy-button {
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  padding: 5px 10px;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  position: absolute; /* 使用绝对定位，方便调整位置 */
-  top: 5px; /* 调整垂直位置 */
-  right: 5px; /* 调整水平位置 */
+  padding: 0;
+  margin-right: 5px;
+}
+
+.copy-button svg {
+  vertical-align: middle;
 }
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const copyButton = document.querySelector('.copy-button');
-  const codeBlock = document.getElementById('myCode');
 
-  copyButton.addEventListener('click', function() {
-    const code = codeBlock.textContent;
-    navigator.clipboard.writeText(code).then(function() {
-      alert('代码已复制到剪贴板！');
-    }, function(err) {
-      console.error('无法复制代码：', err);
+<script>
+  const codeBoxes = document.querySelectorAll('.code-box');
+
+  codeBoxes.forEach(codeBox => {
+    const copyButton = codeBox.querySelector('.copy-button');
+    const codeContent = codeBox.querySelector('pre code');
+
+    copyButton.addEventListener('click', () => {
+      navigator.clipboard.writeText(codeContent.textContent)
+        .then(() => {
+          copyButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>'; // 替换为对勾图标
+          setTimeout(() => {
+            copyButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"><path fill="none" d="M0 0h24v24H0z"/><path d="M17 7h-5v-5C12 2.5 11.6 2 11 2H4c-.6 0-1 .5-1 1v16c0 .5.4 1 1 1h16c.5 0 1-.5 1-1V8c0-.6-.5-1-1-1zm-1 14H5V4h6v5h5v12zM8 6h3v3H8V6z"/></svg>'; // 恢复复制图标
+          }, 2000); // 2秒后恢复
+        })
+        .catch(err => {
+          console.error('复制失败: ', err);
+          copyButton.textContent = '复制失败';
+          setTimeout(() => {
+            copyButton.textContent = '复制';
+          }, 2000);
+        });
     });
   });
-});
 </script>
