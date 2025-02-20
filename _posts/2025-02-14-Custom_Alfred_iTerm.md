@@ -176,7 +176,7 @@ end alfred_script
 
 .summary-text {
   flex-grow: 1; /* 允许文本扩展以占据剩余空间 */
-  text-align: left; /* 文本右对齐 */
+  /* text-align: left; 文本右对齐 */
 }
 
 .summary-arrow {
