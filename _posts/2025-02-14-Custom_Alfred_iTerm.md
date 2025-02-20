@@ -40,8 +40,8 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 # Script解读
 <details class="code-box">
   <summary class="code-box-title">
-    <span class="summary-text">点击打开折叠</span>
     <span class="summary-arrow"></span>
+    <span class="summary-text">点击打开折叠</span>
     <button class="copy-button">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
         <path fill="none" d="M0 0h24v24H0z"/>
@@ -184,7 +184,7 @@ end alfred_script
   height: 0;
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
-  border-left: 8px solid black; /* 三角形图标 */
+  border-left: 8px solid black;
   margin-right: 5px; /* 添加一些间距 */
 }
 
