@@ -41,7 +41,7 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
 <details class="code-box">
   <summary class="code-box-title">
     <span class="summary-arrow"></span>
-    <span class="summary-text">点击打开折叠</span>
+    <span class="summary-text">AppleScript</span>
     <button class="copy-button">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
         <path fill="none" d="M0 0h24v24H0z"/>
