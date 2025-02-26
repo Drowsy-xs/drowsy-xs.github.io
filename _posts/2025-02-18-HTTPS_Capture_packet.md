@@ -58,3 +58,16 @@ EXPORTER_SECRET 212a11025b3beb91bf6b155053df0fd810ccf87fe0aa9f77a96aabfba904e85d
 
 ## Linux 服务端
 
+常见的库 & 可用的库
+
+### 1.Nginx sslkey 模块
+
+编译Nginx的时候可加入：[**nginx sslkey github**](https://github.com/tiandrey/nginx-sslkeylog)
+
+- 在编译nginx的时候，把这个开源库编译进nginx。nginx就可以通过访问日志的记录形式，记录tls密钥
+- tls1.3的时候数据不太全，抓1.2还是够的
+
+### 2.wireshark 自带的库
+
+代码：[**wireshark-notes**](https://git.lekensteyn.nl/peter/wireshark-notes/tree/src/sslkeylog.c)
+操作文档：[**nginx 提取 openssl key**](https://security.stackexchange.com/questions/216065/extracting-openssl-pre-master-secret-from-nginx)
