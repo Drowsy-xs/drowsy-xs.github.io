@@ -50,8 +50,7 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
     </button>
   </summary>
 <div class="code-box-content">
-<pre><span class="line-numbers"></span>
-<code class="code-content">
+<pre><span class="line-numbers"></span><code class="code-content">
 <span style="color: green;">-- 定义一个变量 是否始终在新窗口中打开 iTerm（主进程中调用，如果为 true 意味着，无论当前 iTerm 中已经有多少窗口或标签页，脚本都会强制在新窗口中打开新的会话）</span>
 property open_in_new_window : false
 
