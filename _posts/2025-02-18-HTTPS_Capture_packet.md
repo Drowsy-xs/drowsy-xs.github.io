@@ -27,14 +27,14 @@ http是网络常见中最常见的一种，随着https的普及，我们生产�
 
 ## Linux 客户端
 
-- curl 通过设置 SSLKEYLOGFILE 环境变量记录密钥日志的。比如：
-  1. 添加环境变量：`[ops ~]$ export SSLKEYLOGFILE=/tmp/ssl.log`
-  2. 访问：`[ops ~]$ curl https://www.baidu.com` 
-- 此时使用 tls1.2 版本请求：`[ops ~]$ curl --tlsv1.2 https://www.baidu.com`
-- 之后查看ssl.log文件，发现密钥日志文件出现一行密钥内容。
-  1. 第一列是标签，tls1.2中就是客户端随机数。
-  2. 第二列就是客户端随机数。一次会话中客户端的随机数是固定的。所以，一般会用第二列标识会话。第二列相同就是同一个会话。
-  3. 第三列就是密钥了。在tls1.2中就是主密钥。
+1. curl 通过设置 SSLKEYLOGFILE 环境变量记录密钥日志的。比如：
+  - 添加环境变量：`[ops ~]$ export SSLKEYLOGFILE=/tmp/ssl.log`
+  - 访问：`[ops ~]$ curl https://www.baidu.com` 
+2. 此时使用 tls1.2 版本请求：`[ops ~]$ curl --tlsv1.2 https://www.baidu.com`
+3. 之后查看ssl.log文件，发现密钥日志文件出现一行密钥内容。
+  - 第一列是标签，tls1.2中就是客户端随机数。
+  - 第二列就是客户端随机数。一次会话中客户端的随机数是固定的。所以，一般会用第二列标识会话。第二列相同就是同一个会话。
+  - 第三列就是密钥了。在tls1.2中就是主密钥。
 
 ~~~ shell
 $ cat /tmp/ssl.log 
@@ -42,8 +42,8 @@ $ cat /tmp/ssl.log
 CLIENT_RANDOM 1b152f16c50cae5bcae6845dc1190e2b66d2ce5dfdcbcc3c59371911290aab08 dbc10f1d8ba7ee7b0cc6abc80ce51c2707cd547fa59e04810b2eabd455c59953430b53a06318e3ea9f946cfd4bbf0355
 ~~~
 
-- 用tls1.3版本测试下: `[ops ~]$ curl --tlsv1.3 https://www.baidu.com`
-- 再次查看密钥文件,就会发现多了几行，这是tls1.3 版本的https在整个协议过程中，需要用到的密钥，比较多。当然，我们仅仅是使用的话，不用过分深究。
+4. 用tls1.3版本测试下: `[ops ~]$ curl --tlsv1.3 https://www.baidu.com`
+5. 再次查看密钥文件,就会发现多了几行，这是tls1.3 版本的https在整个协议过程中，需要用到的密钥，比较多。当然，我们仅仅是使用的话，不用过分深究。
 
 ~~~ shell
 CLIENT_RANDOM 1695f088e0d89b5fd878799216638024a2ec2beac41ce6b62eefcae03f64fd18 49301b8e74869d647449177a4fe38a70632f72290dbad620de5f8f056e88789cf99fee2ee328c7e4cd0e06491ff835d9
@@ -54,3 +54,6 @@ SERVER_TRAFFIC_SECRET_0 212a11025b3beb91bf6b155053df0fd810ccf87fe0aa9f77a96aabfb
 EXPORTER_SECRET 212a11025b3beb91bf6b155053df0fd810ccf87fe0aa9f77a96aabfba904e85d 389bf874068ab12d872a4da94703150fac9255c9d4c5dc1abda242df9197c840746d94e5af220fe215c6a909e582ff98
 ~~~
 
+当然 curl 的密钥记录是基于各种 ssl 库实现的，常见的有 openssl 。 **这些库本身提供了记录密钥日志文件的功能**
+
+## Linux 服务端
