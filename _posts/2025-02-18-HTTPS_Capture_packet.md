@@ -69,6 +69,6 @@ EXPORTER_SECRET 212a11025b3beb91bf6b155053df0fd810ccf87fe0aa9f77a96aabfba904e85d
 
 ### 2.wireshark 自带的库
 
-代码：[**wireshark-notes**](https://git.lekensteyn.nl/peter/wireshark-notes/tree/src/sslkeylog.c)
+github代码：[**wireshark-notes**](https://github.com/Lekensteyn/wireshark-notes)
 
 操作文档：[**nginx 提取 openssl key**](https://security.stackexchange.com/questions/216065/extracting-openssl-pre-master-secret-from-nginx)
