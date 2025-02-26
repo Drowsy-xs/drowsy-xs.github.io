@@ -50,7 +50,8 @@ curl --silent 'https://raw.githubusercontent.com/vitorgalvao/custom-alfred-iterm
     </button>
   </summary>
 <div class="code-box-content">
-<pre><code>
+<pre><span class="line-numbers"></span>
+<code class="code-content">
 <span style="color: green;">-- 定义一个变量 是否始终在新窗口中打开 iTerm（主进程中调用，如果为 true 意味着，无论当前 iTerm 中已经有多少窗口或标签页，脚本都会强制在新窗口中打开新的会话）</span>
 property open_in_new_window : false
 
@@ -216,6 +217,21 @@ end alfred_script
 .copy-button svg {
   vertical-align: middle;
 }
+
+.code-box-content pre {
+  display: flex; /* 使用 flexbox 布局 */
+}
+
+.line-numbers {
+  user-select: none; /* 防止用户选择行号 */
+  color: #999; /* 行号颜色 */
+  padding-right: 10px; /* 行号右侧内边距 */
+  text-align: right; /* 行号右对齐 */
+}
+
+.code-content {
+  flex-grow: 1; /* 代码内容占据剩余空间 */
+}
 </style>
 
 
@@ -225,6 +241,16 @@ end alfred_script
   codeBoxes.forEach(codeBox => {
     const copyButton = codeBox.querySelector('.copy-button');
     const codeContent = codeBox.querySelector('pre code');
+
+    const lineNumbers = codeBox.querySelector('.line-numbers');
+
+    // 生成行号
+    const lines = codeContent.textContent.split('\n').length;
+    let numbers = '';
+    for (let i = 1; i <= lines; i++) {
+      numbers += i + '\n';
+    }
+    lineNumbers.textContent = numbers;
 
     copyButton.addEventListener('click', () => {
       navigator.clipboard.writeText(codeContent.textContent)
