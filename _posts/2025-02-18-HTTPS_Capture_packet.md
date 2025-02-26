@@ -78,3 +78,5 @@ github代码: [**wireshark-notes**](https://github.com/Lekensteyn/wireshark-note
 官网: [**ecapture**](https://ecapture.cc/zh/)
 
 功能: 无CA证书HTTPS/TLS数据抓包 ———— eBPF技术驱动，支持Linux/Android（x86_64/Aarch64）
+
+这款抓包APP，通过ebpf在程序或库中注入，数据处理的ebpf代码。直接在用户态抓取数据包。ebpf对内核有要求，这个比较重要，得看是不是适合。
