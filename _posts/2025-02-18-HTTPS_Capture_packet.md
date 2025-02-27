@@ -98,12 +98,30 @@ openssl 作为常用的 ssl 库，不出所料提供了记录密钥日志文件�
 - SSL_CTX_set_keylog_callback: <span style="color: red;">SSL_CTX</span> 级别的函数，因此它会影响到所有从此上下文中创建的SSL对象。允许自定义密钥处理逻辑，常用于复杂调试环境;
 - ssl_log_secret: 直接调用的函数，用于记录单个密钥，适合简单的场景
 
-获取密钥不需太复杂场景 `ssl_log_secret` 即可，代码如下：
-~~~
+获取密钥不需太复杂场景 `ssl_log_secret` 即可，同时ssl加密过程也会调用该函数，代码如下：
+~~~ shell
 int ssl_log_secret(SSL *ssl,
                    const char *label,
                    const uint8_t *secret,
                    size_t secret_len)
+~~~
+ssl的加密过程主要在`tls13_change_cipher_state`函数中，我们通过查看此函数，如下所示：在 tls 的各种状态中，都会执行`ssl_log_secret`函数，并不会先判断环境变量再执行。所以哪怕我们没开启密钥日志记录功能，此函数也会执行。
+~~~ C
+ if (!tls13_hkdf_expand(s, md, insecret,
+                                   early_exporter_master_secret,
+                                   sizeof(early_exporter_master_secret) - 1,
+                                   hashval, hashlen,
+                                   s->early_exporter_master_secret, hashlen,
+                                   1)) {
+                SSLfatal(s, SSL_AD_INTERNAL_ERROR,
+                         SSL_F_TLS13_CHANGE_CIPHER_STATE, ERR_R_INTERNAL_ERROR);
+                goto err;
+            }
+            if (!ssl_log_secret(s, EARLY_EXPORTER_SECRET_LABEL,
+                                s->early_exporter_master_secret, hashlen)) {
+                /* SSLfatal() already called */
+                goto err;
+            }
 ~~~
 
 ## 2.解读函数
