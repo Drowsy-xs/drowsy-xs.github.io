@@ -23,7 +23,7 @@ http是网络常见中最常见的一种，随着https的普及，我们生产�
   - 在wireshark中导入密钥日志，打开抓取的数据包即可。
 5. 记录密钥这个是大部分软件配套的功能，库都是有记录密钥功能的
 
-# 获取密钥
+# 常见获取密钥方式
 
 ## Linux 客户端
 
@@ -81,7 +81,33 @@ github代码: [**wireshark-notes**](https://github.com/Lekensteyn/wireshark-note
 
 这款抓包APP，通过ebpf在程序或库中注入，数据处理的ebpf代码。直接在用户态抓取数据包。ebpf对内核有要求，这个比较重要，得看是不是适合。
 
-## uprobe/kprobe
+# uprobe/kprobe获取密钥
 
 > 日常故障排查，常用方式有: 日志、监控、抓包。不过监控数据是大体的，而日志能不能记录到错误，得看有没有对相关组件记录，就算记录了相关组件，也不一定有记录对应错误信息。<br>
 > 排查时最好的情况是能复现，可以通过调试、抓包等方式排错。如果只能在线上、生产环境复现，又不能随意乱动，排查起来就更不方便; 这种情况内核探针就有了用武之地;
+
+[**uprobe kernel文档**](https://www.kernel.org/doc/html/latest/trace/uprobetracer.html)
+
+uprobe 是 Linux 内核中的一个动态跟踪工具，它允许你在用户空间的应用程序中设置探针，以便在应用程序执行特定代码时触发事件。
+程序在编译后其实都是汇编程序，一堆汇编指令，而 uprobe 可以在这对汇编指令中插入其他的指令。假设执行一个 bash 命令的 readline 函数入口前插入 uprobe，每当 bash 执行到 readline 函数前都会先执行 uprobe，继而执行 readline 函数。同理，也能在函数的返回处插入 uprobe。当程序，比如 bash，执行到 readline 处时，就可以获取到此时的函数参数。所以理论上只要找到处理 ssl 的函数，在函数入口插入 uprobe，再找到保存密钥的寄存器，将其输出打印出来，获取到密钥信息，就可以解析https密文了，下述一些过程可用于参考: 
+
+## 1.处理ssl的函数
+
+openssl 作为常用的 ssl 库，不出所料提供了记录密钥日志文件的功能；
+尝试找了下，发现了两个相关的函数 `SSL_CTX_set_keylog_callback (回调函数)` 和 `ssl_log_secret (日志记录)`
+- SSL_CTX_set_keylog_callback: <span style="color: red;">SSL_CTX</span> 级别的函数，因此它会影响到所有从此上下文中创建的SSL对象。允许自定义密钥处理逻辑，常用于复杂调试环境;
+- ssl_log_secret: 直接调用的函数，用于记录单个密钥，适合简单的场景
+
+获取密钥不需太复杂场景 `ssl_log_secret` 即可，代码如下：
+~~~
+int ssl_log_secret(SSL *ssl,
+                   const char *label,
+                   const uint8_t *secret,
+                   size_t secret_len)
+~~~
+
+## 2.解读函数
+
+
+
+## 3.解析参数
