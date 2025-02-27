@@ -25,12 +25,27 @@ body {
   line-height: 1.7em;
 }
 
-.container {
+// .container {
+//   margin: 0 auto;
+//   max-width: 1500px;
+//   padding: 0 20px;
+//   width: 100%;
+// }
+div[class="wrapper-content"] .container {
+  margin: 0 auto;
+  max-width: 1000px;
+  padding: 0 20px;
+  width: 100%; 
+}
+
+/* 当 class 包含 withtoc 时 */
+div[class*="withtoc"] .container {
   margin: 0 auto;
   max-width: 1500px;
   padding: 0 20px;
   width: 100%;
 }
+
 
 h1, h2, h3, h4, h5, h6 {
   line-height: 2em;
@@ -430,7 +445,6 @@ nav {
 .wrapper-content {
   float: right;
   width: 80%;
-  right: 0;
 
   @include mobile {
     float: none;
