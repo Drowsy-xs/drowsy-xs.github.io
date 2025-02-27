@@ -25,12 +25,13 @@ body {
   line-height: 1.7em;
 }
 
-// .container {
-//   margin: 0 auto;
-//   max-width: 1500px;
-//   padding: 0 20px;
-//   width: 100%;
-// }
+.container {
+  margin: 0 auto;
+  max-width: 1500px;
+  padding: 0 20px;
+  width: 100%;
+}
+
 div[class="wrapper-content"] .container {
   margin: 0 auto;
   max-width: 1000px;
