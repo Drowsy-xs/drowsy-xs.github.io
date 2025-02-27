@@ -430,6 +430,7 @@ nav {
 .wrapper-content {
   float: right;
   width: 90%;
+  right: 0;
 
   @include mobile {
     float: none;
