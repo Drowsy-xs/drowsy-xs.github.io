@@ -28,9 +28,9 @@ http是网络常见中最常见的一种，随着https的普及，我们生产�
 ## Linux 客户端
 
 1. curl 通过设置 SSLKEYLOGFILE 环境变量记录密钥日志的。比如：
-  - 添加环境变量：`[ops ~]$ export SSLKEYLOGFILE=/tmp/ssl.log`
-  - 访问：`[ops ~]$ curl https://www.baidu.com` 
-2. 此时使用 tls1.2 版本请求：`[ops ~]$ curl --tlsv1.2 https://www.baidu.com`
+  - 添加环境变量：`[root@localhost ~]$ export SSLKEYLOGFILE=/tmp/ssl.log`
+  - 访问：`[root@localhost ~]$ curl https://www.baidu.com` 
+2. 此时使用 tls1.2 版本请求：`[root@localhost ~]$ curl --tlsv1.2 https://www.baidu.com`
 3. 之后查看ssl.log文件，发现密钥日志文件出现一行密钥内容。
   - 第一列是标签，tls1.2中就是客户端随机数。
   - 第二列就是客户端随机数。一次会话中客户端的随机数是固定的。所以，一般会用第二列标识会话。第二列相同就是同一个会话。
@@ -42,7 +42,7 @@ $ cat /tmp/ssl.log
 CLIENT_RANDOM 1b152f16c50cae5bcae6845dc1190e2b66d2ce5dfdcbcc3c59371911290aab08 dbc10f1d8ba7ee7b0cc6abc80ce51c2707cd547fa59e04810b2eabd455c59953430b53a06318e3ea9f946cfd4bbf0355
 ~~~
 
-4. 用tls1.3版本测试下: `[ops ~]$ curl --tlsv1.3 https://www.baidu.com`
+4. 用tls1.3版本测试下: `[root@localhost ~]$ curl --tlsv1.3 https://www.baidu.com`
 5. 再次查看密钥文件,就会发现多了几行，这是tls1.3 版本的https在整个协议过程中，需要用到的密钥，比较多。当然，我们仅仅是使用的话，不用过分深究。
 
 ~~~ shell
