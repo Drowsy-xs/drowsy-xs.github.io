@@ -105,7 +105,7 @@ int ssl_log_secret(SSL *ssl,
                    const uint8_t *secret,
                    size_t secret_len)
 ~~~
-ssl的加密过程主要在`tls13_change_cipher_state`函数中，我们通过查看此函数，如下所示：在 tls 的各种状态中，都会执行`ssl_log_secret`函数，并不会先判断环境变量再执行。所以哪怕我们没开启密钥日志记录功能，此函数也会执行。
+ssl的加密过程主要在`tls13_change_cipher_state`函数中，如下所示：在 tls 的各种状态中，都会执行`ssl_log_secret`函数，并不会先判断环境变量再执行。即时没开启密钥日志记录功能，也会记录密钥。
 
 ~~~ c
  if (!tls13_hkdf_expand(s, md, insecret,
@@ -125,8 +125,128 @@ ssl的加密过程主要在`tls13_change_cipher_state`函数中，我们通过�
             }
 ~~~
 
-## 2.解读函数
+## 2.ssl_log_secret解读
 
+函数中有四个参数，参数一用来记录ssl结构体(对象)，ssl对象会保存客户端、服务端的随机数。参数二的 label，就是密钥日志文件的第一列，密钥标签。参数三的secret,就是我们需要的密钥。参数四secret_len就是密钥的长度
+~~~c
+SSL *ssl,
+const char *label,
+const uint8_t *secret,
+size_t secret_len
+~~~
 
+## 3.怎么从ssl对象中获取client_random
 
-## 3.解析参数
+>对象其实使用多个成员变量组成，由于子节对齐的原因，我们很难通过计算得出对象的某个成员变量相对这个对象的偏移量。其实一个c 对象的值就是一个定长的子节数组。第一个成员变量的地址为 对象的地址+偏移量0 的地址。第二个成员变量的地址为 对象的地址+第一个对象的字节长度 的地址，第三个 成员变量的地址就是 对象的地址+第一个对象的子节长度+第二个对象的子节长度+子节对齐的长度。 如果没有子节对齐，其实我们很容器计算出对象某个成员，相对于对象的偏移量。从而得到成员的地址。但是一定会存在子节对齐，所以获取某个成员的地址，颇为复杂。 debuginfo主要保存的是程序的元数据，比如符号表等。我们可以使用gdb解析包含debuginfo的程序。就可以很容易的获取成员的偏移。
+
+### 编译带debug信息libssl.so
+
+系统内的openssl库是不带符号表的。nginx主要依赖libssl.so这个库。我们可以通过包管理工具安装debuginfo包。因为openssl本身编译比较简单。所以我们直接编译带debug信息的libss.so
+~~~shell
+// centos7系统
+// 检查nginx依赖的openssl版本
+$ nginx -V 2>&1 |grep SSL
+built with OpenSSL 1.1.1k  FIPS 25 Mar 2021
+
+// 安装编译环境
+$ yum install -y wget tar make gcc perl pcre-devel zlib-devel
+
+// 下载对应版本的openssl
+$ wget https://www.openssl.org/source/old/1.1.1/openssl-1.1.1k.tar.gz --no-check-certificate
+
+// 解压
+$ tar -xf openssl-1.1.1k.tar.gz
+
+cd openssl-1.1.1k
+
+// -d选项就是带debuginfo的编译配置
+$ ./config -d --prefix=/usr/local/ssl --openssldir=/usr/local/ssl -Wl,-rpath,/usr/local/ssl/lib shared
+make
+~~~
+
+### gdb查看ssl对象
+
+~~~shell
+// 执行gdb
+gdb libssl.so.1.1
+// 通过ptype 命令查看 ssl对象，ssl结构体的定义名为：struct ssl_st
+// 输出信息中，第一列为成员相对于结构体的偏移量，第二列为成员的大小，第三列就是成员的源码。
+// 注意偏移量为 168 的对象：struct ssl3_state_st *s3;
+// client_random 其实是保存在struct ssl3_state_st 结构体中。
+(gdb) ptype /o struct ssl_st
+/* offset    |  size */  type = struct ssl_st {
+/*    0      |     4 */    int version;
+/* XXX  4-byte hole */
+/*    8      |     8 */    const SSL_METHOD *method;
+/*   16      |     8 */    BIO *rbio;
+/*   24      |     8 */    BIO *wbio;
+/*   32      |     8 */    BIO *bbio;
+/*   40      |     4 */    int rwstate;
+/* XXX  4-byte hole */
+/*   48      |     8 */    int (*handshake_func)(SSL *);
+/*   56      |     4 */    int server;
+/*   60      |     4 */    int new_session;
+/*   64      |     4 */    int quiet_shutdown;
+/*   68      |     4 */    int shutdown;
+/*   72      |    60 */    OSSL_STATEM statem;
+/*  132      |     4 */    SSL_EARLY_DATA_STATE early_data_state;
+/*  136      |     8 */    BUF_MEM *init_buf;
+/*  144      |     8 */    void *init_msg;
+/*  152      |     8 */    size_t init_num;
+/*  160      |     8 */    size_t init_off;
+/*  168      |     8 */    struct ssl3_state_st *s3;
+/*  176      |     8 */    struct dtls1_state_st *d1;
+/*  184      |     8 */    void (*msg_callback)(int, int, int, const void *, size_t, SSL *, void *);
+/*  192      |     8 */    void *msg_callback_arg;
+/*  200      |     4 */    int hit;
+/* XXX  4-byte hole */
+/*  208      |     8 */    X509_VERIFY_PARAM *param;
+/*  216      |    64 */    SSL_DANE dane;
+/*  280      |     8 */    struct stack_st_SSL_CIPHER *peer_ciphers;
+/*  288      |     8 */    struct stack_st_SSL_CIPHER *cipher_list;
+/*  296      |     8 */    struct stack_st_SSL_CIPHER *cipher_list_by_id;
+/*  304      |     8 */    struct stack_st_SSL_CIPHER *tls13_ciphersuites;
+// 我们继续通过pteyp命令查看 struct ssl3_state_st 结构体。
+// 偏移量为 184的位置就是我们需要的client_random
+(gdb) ptype /o struct ssl3_state_st
+/* offset    |  size */  type = struct ssl3_state_st {
+/*    0      |     8 */    long flags;
+/*    8      |     8 */    size_t read_mac_secret_size;
+/*   16      |    64 */    unsigned char read_mac_secret[64];
+/*   80      |     8 */    size_t write_mac_secret_size;
+/*   88      |    64 */    unsigned char write_mac_secret[64];
+/*  152      |    32 */    unsigned char server_random[32];
+/*  184      |    32 */    unsigned char client_random[32];
+/*  216      |     4 */    int need_empty_fragments;
+/*  220      |     4 */    int empty_fragment_done;
+/*  224      |     8 */    BIO *handshake_buffer;
+/*  232      |     8 */    EVP_MD_CTX *handshake_dgst;
+/*  240      |     4 */    int change_cipher_spec;
+/*  244      |     4 */    int warn_alert;
+/*  248      |     4 */    int fatal_alert;
+/*  252      |     4 */    int alert_dispatch;
+/*  256      |     2 */    unsigned char send_alert[2];
+/* XXX  2-byte hole */
+/*  260      |     4 */    int renegotiate;
+/*  264      |     4 */    int total_renegotiations;
+/*  268      |     4 */    int num_renegotiations;
+/*  272      |     4 */    int in_read_app_data;
+找到了我们需要的成员，uprobe表达式改如何写呢?,我们这样写：client_random=+192(+168(%di)):u64
+di 寄存器就是ssl_log_secret函数的第一个参数。保存的是对象ssl的地址。
++168(%di)：就是相对 struct ssl_st 这个结构体的地址偏移168的位置，此位置是一个结构体地址：struct ssl3_state_st *s3;
++192(+168(%di)):u64： 再次通过圆括号对上面的地址进行解析，就是相对于
+struct ssl3_state_st这个地址偏移量192的位置。此位置是一个字符数组。然后我们通过u64，无符号整型保存。
+~~~
+
+### 构造uprobe表达式
+
+uprobe的表达式如下所示：
+
+~~~shell
+‘p:/usr/lib64/libssl.so.1.1:ssl_log_secret lable=+0(%si):string client_random=+184(+168(%di)):u64   secret=+0(%dx):u64 secret_len=%cx’
+~~~
+
+其中 p 表示，探测函数入口。
+  - /usr/lib64/libssl.so.1.1 为我们要探测是进程的地址。
+  - ssl_log_secret 就是我们要探测是函数。
+  - lable=+0(%si):string 是我们要探测的其中一个参数，其他参数类似，这种形式的表达式可以写多个。其实label 表示变量名，主要是表标识这个表达式的结果。
