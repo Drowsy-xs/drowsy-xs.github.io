@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "HTTPS密文抓包"
-date:   2025-02-27
+date:   2025-02-28
 tags: [cdn]
 comments: true
 author: xingsong
@@ -250,3 +250,49 @@ uprobe的表达式如下所示：
   - /usr/lib64/libssl.so.1.1 为我们要探测是进程的地址。
   - ssl_log_secret 就是我们要探测是函数。
   - lable=+0(%si):string 是我们要探测的其中一个参数，其他参数类似，这种形式的表达式可以写多个。其实label 表示变量名，主要是表标识这个表达式的结果。
+
+### 执行uprobe
+
+如果我们使用原生的uprobe，执行过程较为复杂，需要多次与文件系统交互。brendangregg大神写了一个工具集：perf-tools，可以帮我们避免这个繁琐的过程。
+~~~shell
+  // 假定已经安装了nginx，并监听443端口。此处较为简单，不赘述。
+// 查看nginx依赖的libssl.so 路径
+# lsof -p 1722 |grep libssl
+nginx   1722 root  mem    REG              253,0  1684112  35442440 /usr/lib64/libssl.so.1.1
+//所以uprobe需要探测：/usr/lib64/libssl.so.1.1
+//下载工具
+git clone https://github.com/brendangregg/perf-tools.git
+//因为是bash shell，所以可以直接执行
+perf-tools/bin/uprobe -F 'p:/usr/lib64/libssl.so.1.1:ssl_log_secret lable=+0(%si):string client_random=+184(+168(%di)):u64   secret=+0(%dx):u64 secret_len=%cx'
+
+
+//新开一个终端，触发一个https请求
+curl --tlsv1.2 https://127.0.0.1 -k
+// 执行后，uprobe输出内容如下：
+           nginx-1723  [002] d...  3268.340921: ssl_log_secret: (0x7fd981420b1e) lable="CLIENT_RANDOM" client_random=0x87fccb2cdefa29cc secret=0xc0306bfaf3d08ed2 secret_len=0x30
+// 如果是tls1.3 ，则结果如下：
+[root@localhost ~]# perf-tools/bin/uprobe -F 'p:/usr/lib64/libssl.so.1.1:ssl_log_secret lable=+0(%si):string client_random=+184(+168(%di)):u64   secret=+0(%dx):u64 secret_len=%cx'
+Tracing uprobe ssl_log_secret (p:ssl_log_secret /usr/lib64/libssl.so.1.1:0x49b1e lable=+0(%si):string client_random=+184(+168(%di)):u64 secret=+0(%dx):u64 secret_len=%cx). Ctrl-C to end.
+           nginx-1723  [003] d...  3326.488290: ssl_log_secret: (0x7fd981420b1e) lable="SERVER_HANDSHAKE_TRAFFIC_SECRET" client_random=0x63d2968d89ea94b0 secret=0x49883dda8f0b7c86 secret_len=0x30
+           nginx-1723  [003] d...  3326.488410: ssl_log_secret: (0x7fd981420b1e) lable="CLIENT_HANDSHAKE_TRAFFIC_SECRET" client_random=0x63d2968d89ea94b0 secret=0x31eb42e8febba398 secret_len=0x30
+           nginx-1723  [003] d...  3326.489574: ssl_log_secret: (0x7fd981420b1e) lable="EXPORTER_SECRET" client_random=0x63d2968d89ea94b0 secret=0xd97044ace73cc7cd secret_len=0x30
+           nginx-1723  [003] d...  3326.489671: ssl_log_secret: (0x7fd981420b1e) lable="SERVER_TRAFFIC_SECRET_0" client_random=0x63d2968d89ea94b0 secret=0x2084502737799d92 secret_len=0x30
+           nginx-1723  [003] d...  3326.490778: ssl_log_secret: (0x7fd981420b1e) lable="CLIENT_TRAFFIC_SECRET_0" client_random=0x63d2968d89ea94b0 secret=0x3205df8d939b7734 secret_len=0x30
+~~~
+
+到此，我们就通过uprobe抓取了https的密钥信息
+
+### 结尾
+
+当然，以上的密钥信息并不全，因为密钥一般为32位或者48位，一个u64只有8位。暂时没找到太好的方式，我就先用多个表达式，保存密钥信息。 client_random 一般为32位，需要4个表达式。 secret 一般为48位需要56个表达式。 所以最终uprobe的命令如下所示：
+~~~shell
+./uprobe -F 'p:/usr/lib64/libssl.so.1.1:ssl_log_secret lable=+0(%si):string client_random1=+184(+168(%di)):u64   client_random2=+192(+168(%di)):u64 client_random3=+200(+168(%di)):u64 client_random4=+208(+168(%di)):u64  secret1=+0(%dx):u64 secret2=+8(%dx):u64 secret3=+16(%dx):u64 secret4=+24(%dx):u64 secret5=+32(%dx):u64 secret6=+40(%dx):u64  secret_len=%cx'
+~~~
+后续我们需要再写一个程序，把uprobe的输出组织成ssl 密钥日志文件的格式。其中有一个注意点，uprobe的字节序是反的。 举个例子：
+~~~shell
+nginx-1727  [003] d...  3943.752729: ssl_log_secret: (0x7fd981420b1e) lable="CLIENT_RANDOM" client_random1=0x5a742665803ba288 client_random2=0xae1b995ef4fada50 client_random3=0xb45ca5b3b6b85d56 client_random4=0x41f04b1e53a88afc secret1=0x8ab89fc0f29edce2 secret2=0x6de1ba3d0393bb91 secret3=0x6fdef1660f81eaaa secret4=0xffa172d15b0bfcb6 secret5=0x8179eaca1a43e0ca secret6=0xa94e8f17b2ed6be0 secret_len=0x30
+~~~
+
+其中client_random前8个子节为：client_random1=0x5a742665803ba288。但其实client_random前8个子节真正的内容为：88a23b806526745a。完整的client_random为：88a23b806526745a50dafaf45e991bae565db8b6b3a55cb4fc8aa8531e4bf041
+
+注： 所有uprobe表达式仅仅适用于openssl-1.1.1k版本。其实版本可能需要重新编译，通过gdb查询
